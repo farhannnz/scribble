@@ -17,21 +17,26 @@ function PopUp({ togglePopup }) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ title, details })
-            }).then((res) => {
-                if (res.ok) {
-                    notes.push({ title, details });
-                    setTitle("");
-                    setDetails("");
-                    alert("Note Saved!");
-                    togglePopup();
-                } else {
-                    alert("Note not Saved!");
-                }
-            }).catch(() => {
-                alert("Note not Saved!");
-            });
+            }).then((res) => res.json())
+              .then((data) => {
+                  if (data._id) {  // Check if the note is successfully saved by checking if it has an id
+                      notes.push(data);
+                      setTitle("");
+                      setDetails("");
+                      alert("Note Saved!"); // Alert after successful response
+                      togglePopup();
+                  } else {
+                      alert("Note not Saved!");
+                  }
+              })
+              .catch((error) => {
+                  alert("Note not Saved!");
+              });
+        } else {
+            alert("Title and details cannot be empty!");
         }
-    }
+    };
+    
 
     useEffect(() => {
         getNotes();

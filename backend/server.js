@@ -76,14 +76,20 @@ app.get('/home', async (req, res) => {
 
 app.delete('/home/:id', async (req, res) => {
     try {
-        const id =req.params.id;
-        await noteModel.findByIdAndDelete(id);
-        res.status(500).json({message: "Note Deleted"});
+        const id = req.params.id;
+        const deletedNote = await noteModel.findByIdAndDelete(id);
+        
+        if (!deletedNote) {
+            return res.status(404).json({ message: "Note not found" });
+        }
+
+        res.status(200).json({ message: "Note deleted successfully" });
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
-})
+});
+
 
 const PORT = 2029;
 app.listen(PORT, () => {
