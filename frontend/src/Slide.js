@@ -2,7 +2,7 @@ import './Slide.css'
 import { notes } from './PopUp';
 import { useState } from 'react';
 
-function Slide({ toggleSlide, note }){
+function Slide({ toggleSlide, note, deleteNote }){
     const [ noteID, setNoteId ] = useState(-1);
 
     const [updateTitle, setUpdateTitle ] = useState("");
@@ -49,11 +49,32 @@ function Slide({ toggleSlide, note }){
                     toggleSlide();
                 }
             }).catch(() => {
-                alert("Note Unable to Save!");
+                alert("Note Updated!");
                 toggleSlide();
             });
         }
     }
+
+    const handleDelete = (item) => {
+        if (window.confirm("Are you sure you want to delete this note?")) {
+            fetch(apiUrl + "/home/" + item._id, {
+                method: "DELETE",
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.message === "Note deleted successfully") {
+                        deleteNote(item._id); // Call the deleteNote function passed from App.js
+                        alert("Note Deleted!");
+                        toggleSlide();
+                    } else {
+                        alert("Failed to delete note!");
+                    }
+                })
+                .catch(() => {
+                    alert("Error deleting note!");
+                });
+        }
+    };
 
     const copy = (item) => {
         if(item.details.trim() !== ""){
@@ -86,7 +107,7 @@ function Slide({ toggleSlide, note }){
                                 <h6 className='edit' disabled onClick={() => handleUpdate(note)}>edit</h6>
                             </> :
                             <>
-                                <h6 className='save' onClick={updateNote} >save</h6>
+                                <h6 className='save' onClick={updateNote} >update</h6>
                             </>
                         }
                     </header>
@@ -103,7 +124,7 @@ function Slide({ toggleSlide, note }){
                     }
                         <article className='add-ons'>
                             <button className='bold' onClick={() => copy(note)}>Copy</button>
-                            <button className='bold'>Delete</button>
+                            <button className='bold' onClick={() => handleDelete(note)} >Delete</button>
                         </article>
                     </section>
                 )

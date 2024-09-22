@@ -1,39 +1,77 @@
-import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Slide from './Slide';  // Import the Slide component
 import PopUp from './PopUp';
 import Notes from './Notes';
-import Slide from './Slide';
+import './App.css'
 
 function App() {
+    const [notes, setNotes] = useState([]);
+    const [showPopup, setShowPopup] = useState(false);
+    const [showSlide, setShowSlide] = useState(false);
+    const [selectedNote, setSelectedNote] = useState(null);
+    const apiUrl = "http://localhost:2029"; // Your API base URL
 
-	const [showPopup, setShowPopup ] = useState(false);
-	const [showSlide, setShowSlide ] = useState(false);
-	const [selectedNote, setSelectedNote ] = useState(null);
+    // Fetch notes when the component mounts
+    useEffect(() => {
+        fetchNotes();
+    }, []);
 
-	const togglePopup = () => {
-		setShowPopup(!showPopup);
-	}
+    // Function to fetch notes from the backend
+    const fetchNotes = () => {
+        fetch(apiUrl + "/home")
+            .then((res) => res.json())
+            .then((data) => {
+                setNotes(data);
+            })
+            .catch((error) => {
+                console.error("Error fetching notes:", error);
+            });
+    };
 
-	const toggleSlide = (note = null) => {
-		setShowSlide(!showSlide);
-		setSelectedNote(note);
-		console.log("clicked", note);
-	}
+    const togglePopup = () => setShowPopup(!showPopup);
+    const toggleSlide = (note = null) => {
+        setShowSlide(!showSlide);
+        setSelectedNote(note);
+    };
 
-  return (
-	<>
-		<div className='container'>
-			<header className='head'>
-				<h1 className='scribble'>Scribble</h1>
-				<button className='addItem' onClick={togglePopup}>create</button>
-				{showPopup && <PopUp togglePopup={togglePopup}/>}
-			</header>
-			{showSlide && <Slide toggleSlide={toggleSlide} note={selectedNote}/>}
-		</div>
-		<Notes toggleSlide={toggleSlide}/>
-		{/* <Slide/> */}
-	</>
-  );
+    const updateNote = (updatedNote) => {
+        const updatedNotes = notes.map((note) =>
+            note._id === updatedNote._id ? updatedNote : note
+        );
+        setNotes(updatedNotes);
+    };
+
+    const deleteNote = (noteId) => {
+        const filteredNotes = notes.filter((note) => note._id !== noteId);
+        setNotes(filteredNotes);
+    };
+
+    const addNote = (newNote) => {
+        setNotes([...notes, newNote]);
+    };
+
+    return (
+        <>
+            <div className="container">
+                <header className="head">
+                    <h1 className="scribble">Scribble</h1>
+                    <button className="addItem" onClick={togglePopup}>
+                        create
+                    </button>
+                    {showPopup && <PopUp togglePopup={togglePopup} addNote={addNote} />} {/* Pass addNote to PopUp */}
+                </header>
+                {showSlide && (
+                    <Slide
+                        toggleSlide={toggleSlide}
+                        note={selectedNote}
+                        updateNote={updateNote}
+                        deleteNote={deleteNote}
+                    />
+                )}
+            </div>
+            <Notes notes={notes} toggleSlide={toggleSlide} />
+        </>
+    );
 }
 
 export default App;
