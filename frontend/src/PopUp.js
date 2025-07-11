@@ -7,7 +7,7 @@ export let notes = [];
 function PopUp({ togglePopup }) {
     const [title, setTitle] = useState("");
     const [details, setDetails] = useState("");
-    const apiUrl = "http://localhost:2029";
+    const apiUrl = "https://scribble-hxqw.onrender.com";
 
     const saveNote = () => {
         if (title.trim() !== '' && details.trim() !== '') {

@@ -10,7 +10,7 @@ function Slide({ toggleSlide, note, deleteNote }){
     const [title, setTitle] = useState("");
     
     const [details, setDetails] = useState("");
-    const apiUrl = "http://localhost:2029";
+    const apiUrl = "https://scribble-hxqw.onrender.com";
 
     const handleUpdate = (item) => {
         setNoteId(item._id);
