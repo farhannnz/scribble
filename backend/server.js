@@ -10,7 +10,7 @@ let notes = [];
 
 // connecting Database
 
-mongoose.connect('mongodb://localhost:27017/scribble')
+mongoose.connect('mongodb+srv://krahit57:qQ7mgaA8CkRSltEo@cluster0.4bqos.mongodb.net/codeUP')
 .then(() => {
     console.log('Database Connected');
 })
